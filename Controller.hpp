@@ -12,9 +12,6 @@ class Controller {
 
   Controller(int, int, std::ifstream&, std::vector<Spawner>);
 
-  //   void setPlayer(int, int, int, int);
-  //   void setMap(std::ifstream&);
-
   int getPlayerX();
   int getPlayerY();
   char getPlayerSYM();
@@ -24,6 +21,10 @@ class Controller {
   void updateMap();
 
   void playerMeleeAttack();
+
+  std::vector<char> whereEnemiesMove(std::vector<std::pair<int, int>>);
+
+  char findRandomFreePlace(int, int);
 
   Spawner* getSpawner(int, int);
 

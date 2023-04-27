@@ -25,5 +25,7 @@ class Enemy {
 
   virtual void getDamage(int) = 0;
 
+  virtual void move(char) = 0;
+
   virtual ~Enemy() = default;
 };

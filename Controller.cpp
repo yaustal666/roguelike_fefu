@@ -70,3 +70,34 @@ int Controller::getPlayerY() { return player.getY(); }
 char Controller::getPlayerSYM() { return player.getSYM(); }
 
 Spawner* Controller::getSpawner(int y, int x) { return mbc.getSpawner(y, x); }
+
+std::vector<char> Controller::whereEnemiesMove(
+    std::vector<std::pair<int, int>> vc) {
+  std::vector<char> where;
+
+  for (auto i : vc) {
+    where.push_back(this->findRandomFreePlace(i.first, i.second));
+  }
+
+  return where;
+}
+
+char Controller::findRandomFreePlace(int y, int x) {
+  int check_up, check_down, check_left, check_right;
+  check_up = mp.getHMap(y - 1, x);
+  check_down = mp.getHMap(y + 1, x);
+  check_left = mp.getHMap(y, x - 1);
+  check_right = mp.getHMap(y, x + 1);
+
+  std::vector<char> vc;
+
+  vc.push_back('.');
+  if (check_up == 1) vc.push_back('u');
+  if (check_down == 1) vc.push_back('d');
+  if (check_left == 1) vc.push_back('l');
+  if (check_right == 1) vc.push_back('r');
+
+  int k = rand_num(0, vc.size() - 1);
+
+  return vc[k];
+}

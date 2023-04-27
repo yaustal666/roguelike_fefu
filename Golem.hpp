@@ -7,9 +7,9 @@ class Golem : public Enemy {
   Golem() = default;
   Golem(int, int, char);
 
-  void move();
+  void move(char) override;
 
-  void getDamage(int);
+  void getDamage(int) override;
 
   void attack();
   void findPlayer();

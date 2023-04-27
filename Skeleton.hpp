@@ -7,9 +7,9 @@ class Skeleton : public Enemy {
   Skeleton() = default;
   Skeleton(int, int, char);
 
-  void move();
+  void move(char) override;
 
-  void getDamage(int);
+  void getDamage(int) override;
 
   void attack();
   void findPlayer();

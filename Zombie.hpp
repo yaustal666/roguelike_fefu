@@ -7,7 +7,7 @@ class Zombie : public Enemy {
   Zombie() = default;
   Zombie(int, int, char);
 
-  void move();
+  void move(char) override;
 
   void getDamage(int) override;
 

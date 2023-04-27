@@ -26,6 +26,7 @@ int main() {
 
   Controller control(10, 13, file, vc);
   control.mbc.updateEnemies();
+  control.mbc.updateEnemies();
   // - start ------------------
   initscr();
   keypad(stdscr, 1);
@@ -37,6 +38,11 @@ int main() {
 
     control.listen(input);
     control.printPlayer();
+
+    std::vector<std::pair<int, int>> vc1 = control.mbc.enemiesPos();
+    std::vector<char> vc2 = control.whereEnemiesMove(vc1);
+
+    control.mbc.moveEnemies(vc2);
 
   } while ((input = getch()) != 27);
 

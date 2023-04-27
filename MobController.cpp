@@ -33,3 +33,24 @@ void MobController::updateEnemies() {
     }
   }
 }
+
+std::vector<std::pair<int, int>> MobController::enemiesPos() {
+  std::vector<std::pair<int, int>> vc;
+
+  for (auto i : enemies_) {
+    std::pair<int, int> pr;
+    pr.first = i.second->getY();
+    pr.second = i.second->getX();
+    vc.push_back(pr);
+  }
+
+  return vc;
+}
+
+void MobController::moveEnemies(std::vector<char> vc) {
+  int j = 0;
+  for (auto i : enemies_) {
+    i.second->move(vc[j]);
+    j++;
+  }
+}

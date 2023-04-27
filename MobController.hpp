@@ -18,6 +18,10 @@ class MobController {
 
   void updateEnemies();
 
+  void moveEnemies(std::vector<char>);
+
+  std::vector<std::pair<int, int>> enemiesPos();
+
   Spawner* getSpawner(int, int);
   Zombie* getZombie(int, int);
   Skeleton* getSkeleton(int, int);
