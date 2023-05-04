@@ -1,64 +1,41 @@
 #include "Map.hpp"
 
-Map::Map(std::ifstream &in) { this->read(in); }
-
-void Map::read(std::ifstream &in) {
-  for (std::string line; getline(in, line);) {
-    std::vector<char> tmp;
-    for (char i : line) {
-      tmp.push_back(i);
-    }
-    map_.push_back(tmp);
-  }
-}
-
-void Map::buildHMap() {
+void Map::buildHeightsMap() {
   heights_map_.clear();
-  for (auto i : map_) {
-    std::vector<int> tmp;
-    for (auto j : i) {
-      if (j == '.')
-        tmp.push_back(1);
-      else
-        tmp.push_back(0);
+
+  for (int i = 0; i < map_y_size; ++i) {
+    std::vector<bool> heights_line;
+
+    for (int j = 0; j < map_x_size; ++j) {
+      bool high;
+      high = visual_map_[i][j] == '.';
+
+      heights_line.push_back(high);
     }
-    heights_map_.push_back(tmp);
+
+    heights_map_.push_back(heights_line);
   }
 }
 
-void Map::parseMobs(MobController &mbc) {
-  for (auto i : mbc.spawners_) {
-    int y = i.second.y;
-    int x = i.second.x;
-    char sym = i.second.sym;
+bool Map::getHsMap(int y, int x) { return heights_map_[y][x]; }
+short Map::getPsMap(int y, int x) { return pathfinding_map_[y][x]; }
+char Map::getVlMap(int y, int x) { return visual_map_[y][x]; }
 
-    map_[y][x] = sym;
-  }
+// std::vector<std::pair<short, short>> Map::getRadius(short y, short x,
+//                                                     short rad) {
+//   std::vector<std::pair<short, short>> res;
 
-  for (auto i : mbc.enemies_) {
-    int y = i.second->getY();
-    int x = i.second->getX();
-    char sym = i.second->getSYM();
+//   int tmp_ys = y - rad;
+//   if (tmp_ys < 1) tmp_ys = 1;
+//   int tmp_xs = x - rad;
+//   if (tmp_xs < 1) tmp_xs = 1;
 
-    map_[y][x] = sym;
-  }
-}
+//   int tmp_ye = y + rad;
+//   if (tmp_ye > 18) tmp_ye = 18;
+//   int tmp_xe = x + rad;
+//   if (tmp_xe > 98) tmp_xe = 98;
 
-void Map::clearMobs() {
-  for (int i = 0; i < map_.size(); ++i) {
-    for (int j = 0; j < map_[i].size(); ++j) {
-      if (map_[i][j] != '.' && map_[i][j] != '#') map_[i][j] = '.';
-    }
-  }
-}
-
-char Map::get(int y, int x) { return map_[y][x]; }
-char Map::getHMap(int y, int x) { return heights_map_[y][x]; }
-char Map::getPMap(int y, int x) { return pathfinding_map_[y][x]; }
-
-void Map::print() {
-  for (int i = 0; i < map_.size(); ++i) {
-    for (int j = 0; j < map_[i].size(); ++j) addch(map_[i][j]);
-    addch('\n');
-  }
-}
+//   for (int i = tmp_ys; i < tmp_ye; ++i)
+//     for (int j = tmp_xs; j < tmp_xe; j++) {
+//     }
+// }

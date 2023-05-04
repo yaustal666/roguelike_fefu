@@ -2,14 +2,13 @@
 
 class Player {
  private:
-  int hp = 20;
-  int dmg = 4;
-  int x, y;
-  char sym = '@';
+  short hp;
+  short dmg;
+  short x, y;
+  char sym;
 
  public:
   Player() = default;
-  Player(int, int);
 
   void move(char);
 
@@ -18,16 +17,17 @@ class Player {
   void move_left();
   void move_right();
 
-  int getHP();
-  int getDmg();
-  int getX();
-  int getY();
-  char getSYM();
+  int getHP() { return hp; }
+  int getDmg() { return dmg; }
+  int getX() { return x; }
+  int getY() { return y; }
+  char getSYM() { return sym; }
 
-  void setHP(int);
-  void setDmg(int);
-  void setX(int);
-  void setY(int);
+  void setHP(int hp) { this->hp = hp; }
+  void setDmg(int dmg) { this->dmg = dmg; }
+  void setX(int x) { this->x = x; }
+  void setY(int y) { this->y = y; }
+  void setSYM(char sym) { this->sym = sym; };
 
   ~Player() = default;
 };

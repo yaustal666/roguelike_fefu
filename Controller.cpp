@@ -1,103 +1,136 @@
 #include "Controller.hpp"
 
-Controller::Controller(int x, int y, std::ifstream& file,
-                       std::vector<Spawner> vc)
-    : player(x, y), mp(file), mbc(vc) {}
-
-void Controller::updateMap() {
-  mp.clearMobs();
-  mp.parseMobs(mbc);
-  mp.buildHMap();
-  mp.print();
+void Controller::initPlayer() {
+  player_.setY(player_start_y);
+  player_.setX(player_start_x);
+  player_.setHP(player_hp);
+  player_.setDmg(player_dmg);
+  player_.setSYM(player_sym);
 }
 
-void Controller::listen(int c) {
-  int check_up, check_down, check_left, check_right;
-  check_up = mp.getHMap(player.getY() - 1, player.getX());
-  check_down = mp.getHMap(player.getY() + 1, player.getX());
-  check_left = mp.getHMap(player.getY(), player.getX() - 1);
-  check_right = mp.getHMap(player.getY(), player.getX() + 1);
-
-  if (c == KEY_UP && check_up) player.move('u');
-  if (c == KEY_DOWN && check_down) player.move('d');
-  if (c == KEY_LEFT && check_left) player.move('l');
-  if (c == KEY_RIGHT && check_right) player.move('r');
+void Controller::initSpawners(std::ifstream& file) {
+  mbc_.createSpawners(file);
 }
 
-void Controller::playerMeleeAttack() {
-  char where = getch();
-  char who_there = 'n';
-  int y, x;
+void Controller::spawnEnemies() { mbc_.spawnEnemies(map_.heights_map_); }
 
-  switch (where) {
-    case KEY_UP: {
-      y = player.getY() - 1;
-      x = player.getX();
-      who_there = mp.get(y, x);
-      break;
+// managing map visual
+void Controller::readMap(std::ifstream& file) {
+  for (std::string line; getline(file, line);) {
+    std::vector<char> tmp;
+    for (char i : line) {
+      tmp.push_back(i);
     }
-    case KEY_DOWN: {
-      y = player.getY() + 1;
-      x = player.getX();
-      who_there = mp.get(y, x);
-      break;
-    }
-    case KEY_LEFT: {
-      y = player.getY();
-      x = player.getX() - 1;
-      who_there = mp.get(y, x);
-      break;
-    }
-    case KEY_RIGHT: {
-      y = player.getY();
-      x = player.getX() + 1;
-      who_there = mp.get(player.getY(), player.getX() + 1);
-      break;
-    }
-
-      if (who_there != 'n') {
-        mbc.inflictDamage(y, x, who_there, 4);
-      }
+    map_.visual_map_.push_back(tmp);
   }
 }
 
-void Controller::printPlayer() {
-  mvaddch(player.getY(), player.getX(), player.getSYM());
+void Controller::addSpawnersToMap() {
+  for (auto i : mbc_.spawners_) {
+    int y = i.second->getY();
+    int x = i.second->getX();
+    char sym = i.second->getSym();
+
+    map_.visual_map_[y][x] = sym;
+  }
 }
 
-int Controller::getPlayerX() { return player.getX(); }
-int Controller::getPlayerY() { return player.getY(); }
-char Controller::getPlayerSYM() { return player.getSYM(); }
+void Controller::removePlayerFromMap() {
+  int y = player_.getY();
+  int x = player_.getX();
 
-Spawner* Controller::getSpawner(int y, int x) { return mbc.getSpawner(y, x); }
+  map_.visual_map_[y][x] = grass_sym;
+}
 
-std::vector<char> Controller::whereEnemiesMove(
-    std::vector<std::pair<int, int>> vc) {
-  std::vector<char> where;
+void Controller::updatePlayerOnMap() {
+  int y = player_.getY();
+  int x = player_.getX();
+  char sym = player_.getSYM();
 
-  for (auto i : vc) {
-    where.push_back(this->findRandomFreePlace(i.first, i.second));
+  map_.visual_map_[y][x] = sym;
+}
+
+void Controller::removeEnemiesFromMap() {
+  std::vector<std::pair<short, short>> tmp = mbc_.getEnemiesPositions();
+
+  for (auto i : tmp) {
+    int y = i.first;
+    int x = i.second;
+
+    map_.visual_map_[y][x] = grass_sym;
+  }
+}
+
+void Controller::updateEnemiesOnMap() {
+  std::vector<std::pair<short, short>> coords = mbc_.getEnemiesPositions();
+  std::vector<char> symbols = mbc_.getEnemiesSYM();
+
+  for (int i = 0; i < coords.size(); ++i) {
+    int y = coords[i].first;
+    int x = coords[i].second;
+    char sym = symbols[i];
+
+    map_.visual_map_[y][x] = sym;
+  }
+}
+// //
+
+void Controller::updateHeightsMap() { map_.buildHeightsMap(); }
+
+void Controller::printMap() {
+  for (int i = 0; i < map_.visual_map_.size(); ++i) {
+    for (int j = 0; j < map_.visual_map_[i].size(); ++j)
+      addch(map_.visual_map_[i][j]);
+    addch('\n');
+  }
+}
+
+void Controller::controllPlayer(int direction) {
+  this->removePlayerFromMap();
+
+  bool check_up, check_down, check_left, check_right;
+  check_up = map_.getHsMap(player_.getY() - 1, player_.getX());
+  check_down = map_.getHsMap(player_.getY() + 1, player_.getX());
+  check_left = map_.getHsMap(player_.getY(), player_.getX() - 1);
+  check_right = map_.getHsMap(player_.getY(), player_.getX() + 1);
+
+  if (direction == KEY_UP && check_up) player_.move('u');
+  if (direction == KEY_DOWN && check_down) player_.move('d');
+  if (direction == KEY_LEFT && check_left) player_.move('l');
+  if (direction == KEY_RIGHT && check_right) player_.move('r');
+
+  this->updatePlayerOnMap();
+}
+
+std::vector<char> Controller::whereEnemiesMove() {
+  std::vector<std::pair<short, short>> coords = mbc_.getEnemiesPositions();
+  std::vector<char> res;
+
+  for (auto i : coords) {
+    std::vector<char> tmp;
+    bool check_up, check_down, check_left, check_right;
+    check_up = map_.getHsMap(i.first - 1, i.second);
+    check_down = map_.getHsMap(i.first + 1, i.second);
+    check_left = map_.getHsMap(i.first, i.second - 1);
+    check_right = map_.getHsMap(i.first, i.second + 1);
+
+    if (check_up) tmp.push_back('u');
+    if (check_down) tmp.push_back('d');
+    if (check_left) tmp.push_back('l');
+    if (check_right) tmp.push_back('r');
+
+    short a = generate_random(0, tmp.size() - 1);
+
+    res.push_back(tmp[a]);
   }
 
-  return where;
+  return res;
 }
 
-char Controller::findRandomFreePlace(int y, int x) {
-  int check_up, check_down, check_left, check_right;
-  check_up = mp.getHMap(y - 1, x);
-  check_down = mp.getHMap(y + 1, x);
-  check_left = mp.getHMap(y, x - 1);
-  check_right = mp.getHMap(y, x + 1);
+void Controller::controlEnemies() {
+  this->removeEnemiesFromMap();
 
-  std::vector<char> vc;
+  mbc_.moveEnemies(this->whereEnemiesMove());
 
-  vc.push_back('.');
-  if (check_up == 1) vc.push_back('u');
-  if (check_down == 1) vc.push_back('d');
-  if (check_left == 1) vc.push_back('l');
-  if (check_right == 1) vc.push_back('r');
-
-  int k = rand_num(0, vc.size() - 1);
-
-  return vc[k];
+  this->updateEnemiesOnMap();
 }

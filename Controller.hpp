@@ -1,33 +1,41 @@
 #pragma once
+
 #include <ncurses.h>
 
 #include "Map.cpp"
 #include "Player.cpp"
+#include "enemies/MobController.cpp"
 
 class Controller {
+ private:
+  Map map_;
+  MobController mbc_;
+  Player player_;
+
  public:
-  Player player;
-  Map mp;
-  MobController mbc;
+  Controller() = default;
 
-  Controller(int, int, std::ifstream&, std::vector<Spawner>);
+  void initPlayer();
+  void initSpawners(std::ifstream&);
 
-  int getPlayerX();
-  int getPlayerY();
-  char getPlayerSYM();
+  void readMap(std::ifstream&);
+  void addSpawnersToMap();
+  void removeEnemiesFromMap();
+  void updateEnemiesOnMap();
+  void removePlayerFromMap();
+  void updatePlayerOnMap();
 
-  void listen(int);
+  void spawnEnemies();
 
-  void updateMap();
+  void updateHeightsMap();
+  void updatePathfindingMap(short, short);
 
-  void playerMeleeAttack();
+  void printMap();
 
-  std::vector<char> whereEnemiesMove(std::vector<std::pair<int, int>>);
+  void controllPlayer(int);
 
-  char findRandomFreePlace(int, int);
+  std::vector<char> whereEnemiesMove();
+  void controlEnemies();
 
-  Spawner* getSpawner(int, int);
-
-  void printPlayer();
   ~Controller() = default;
 };

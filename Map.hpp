@@ -1,31 +1,24 @@
 #pragma once
 
-#include <fstream>
 #include <vector>
 
-#include "MobController.cpp"
+#include "Config.hpp"
 
 class Map {
  public:
-  std::vector<std::vector<char>> map_;
-  std::vector<std::vector<int>> heights_map_;
-  std::vector<std::vector<int>> pathfinding_map_;
+  std::vector<std::vector<char>> visual_map_;
+  std::vector<std::vector<bool>> heights_map_;
+  std::vector<std::vector<short>> pathfinding_map_;
 
- public:
   Map() = default;
 
-  Map(std::ifstream&);
-  void read(std::ifstream&);
+  void buildHeightsMap();
 
-  void buildPMap(int, int);
-  void buildHMap();
-  void print();
+  bool getHsMap(int, int);
+  short getPsMap(int, int);
+  char getVlMap(int, int);
 
-  void parseMobs(MobController&);
-  void clearMobs();
-  char get(int y, int x);
-  char getHMap(int y, int x);
-  char getPMap(int y, int x);
+  std::vector<std::pair<short, short>> getRadius(short, short, short);
 
   ~Map() = default;
 };
