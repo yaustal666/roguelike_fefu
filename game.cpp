@@ -19,6 +19,7 @@ int main() {
   control.updateHeightsMap();
   control.spawnEnemies();
   control.updateEnemiesOnMap();
+  control.updatePathfindingMap();
 
   // - start ------------------
   initscr();

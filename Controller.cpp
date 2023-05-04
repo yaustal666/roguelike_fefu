@@ -77,6 +77,10 @@ void Controller::updateEnemiesOnMap() {
 
 void Controller::updateHeightsMap() { map_.buildHeightsMap(); }
 
+void Controller::updatePathfindingMap() {
+  map_.buildPathfindingMap(player_.getY(), player_.getX());
+}
+
 void Controller::printMap() {
   for (int i = 0; i < map_.visual_map_.size(); ++i) {
     for (int j = 0; j < map_.visual_map_[i].size(); ++j)
@@ -133,4 +137,8 @@ void Controller::controlEnemies() {
   mbc_.moveEnemies(this->whereEnemiesMove());
 
   this->updateEnemiesOnMap();
+}
+
+void Controller::playerGetDamage(short damage) {
+  player_.setHP(player_.getHP() - damage);
 }

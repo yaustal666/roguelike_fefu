@@ -28,7 +28,7 @@ class Controller {
   void spawnEnemies();
 
   void updateHeightsMap();
-  void updatePathfindingMap(short, short);
+  void updatePathfindingMap();
 
   void printMap();
 
@@ -36,6 +36,8 @@ class Controller {
 
   std::vector<char> whereEnemiesMove();
   void controlEnemies();
+
+  void playerGetDamage(short);
 
   ~Controller() = default;
 };

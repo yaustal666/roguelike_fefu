@@ -29,5 +29,5 @@ class Player {
   void setY(int y) { this->y = y; }
   void setSYM(char sym) { this->sym = sym; };
 
-  ~Player() = default;
+    ~Player() = default;
 };

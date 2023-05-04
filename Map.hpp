@@ -13,10 +13,11 @@ class Map {
   Map() = default;
 
   void buildHeightsMap();
+  void buildPathfindingMap(short, short);
 
-  bool getHsMap(int, int);
-  short getPsMap(int, int);
-  char getVlMap(int, int);
+  bool getHsMap(short, short);
+  short getPsMap(short, short);
+  char getVlMap(short, short);
 
   std::vector<std::pair<short, short>> getRadius(short, short, short);
 
